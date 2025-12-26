@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, ChevronRight, Activity, Search, BookOpen, MessageSquare, Sparkles } from 'lucide-react';
+import { ShoppingBag, ChevronRight, Activity, Search, BookOpen, MessageSquare, Sparkles, Heart } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const Home: React.FC = () => {
@@ -9,52 +9,139 @@ const Home: React.FC = () => {
 
   return (
     <div className="animate-in fade-in duration-700 bg-white">
-      <section className="pt-12 pb-24 px-6 overflow-hidden max-w-7xl mx-auto">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
-          <div className="lg:w-1/2 space-y-8 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest border border-emerald-100">
-              {lang === 'hi' ? 'ऑफिशियल पोर्टल: मनीष यादव' : 'Official Portal: Mr. Manish Yadav'}
+      {/* Hero Section */}
+      <section className="relative pt-8 lg:pt-16 pb-24 px-6 overflow-hidden max-w-7xl mx-auto">
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+          
+          {/* Content Side */}
+          <div className="lg:w-1/2 space-y-8 text-center lg:text-left z-10">
+            <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border border-emerald-100 shadow-sm">
+              <Sparkles size={14} className="animate-pulse" />
+              {lang === 'hi' ? 'मनीष यादव का आधिकारिक पोर्टल' : 'Official Portal: Mr. Manish Yadav'}
             </div>
-            <h1 className="text-5xl lg:text-7xl font-black text-slate-900 leading-[1.05] tracking-tight">
+            
+            <h1 className="text-6xl lg:text-8xl font-black text-slate-900 leading-[0.95] tracking-tighter">
               {t('heroTitle1')} <br />
-              <span className="text-emerald-600 italic">{t('heroTitle2')}</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500 italic">
+                {t('heroTitle2')}
+              </span>
             </h1>
-            <p className="text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 font-medium">
+            
+            <p className="text-xl text-slate-500 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
               {t('heroSub')}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Link to="/order" className="bg-emerald-600 text-white px-10 py-5 rounded-[2rem] font-black text-lg flex items-center justify-center gap-3 shadow-xl">
-                <ShoppingBag size={24} /> {lang === 'hi' ? 'दवाई ऑर्डर करें' : 'BUY MEDICINE'}
+            
+            <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start pt-4">
+              <Link to="/order" className="group bg-emerald-600 text-white px-10 py-6 rounded-[2rem] font-black text-xl flex items-center justify-center gap-3 shadow-2xl shadow-emerald-200 hover:bg-emerald-700 hover:-translate-y-1 transition-all active:scale-95">
+                <ShoppingBag size={24} className="group-hover:rotate-12 transition-transform" /> 
+                {lang === 'hi' ? 'दवाई ऑर्डर करें' : 'ORDER MEDICINE'}
               </Link>
-              <Link to="/explore" className="bg-indigo-600 text-white px-10 py-5 rounded-[2rem] font-black text-lg flex items-center justify-center gap-3 shadow-xl">
+              <Link to="/explore" className="bg-slate-900 text-white px-10 py-6 rounded-[2rem] font-black text-xl flex items-center justify-center gap-3 shadow-2xl shadow-slate-200 hover:bg-slate-800 hover:-translate-y-1 transition-all active:scale-95 border-b-4 border-slate-700">
                 <Search size={24} /> {t('explorer')}
               </Link>
             </div>
+
+            <div className="flex items-center justify-center lg:justify-start gap-8 pt-8 opacity-60">
+              <div className="text-center lg:text-left">
+                <p className="text-2xl font-black text-slate-900">100%</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Genuine</p>
+              </div>
+              <div className="w-px h-8 bg-slate-200"></div>
+              <div className="text-center lg:text-left">
+                <p className="text-2xl font-black text-slate-900">FAST</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Delivery</p>
+              </div>
+              <div className="w-px h-8 bg-slate-200"></div>
+              <div className="text-center lg:text-left">
+                <p className="text-2xl font-black text-slate-900">24/7</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Support</p>
+              </div>
+            </div>
           </div>
-          <div className="lg:w-1/2 rounded-[3rem] overflow-hidden shadow-2xl">
-            <img src="https://images.unsplash.com/photo-1631549916768-4119b295f926?auto=format&fit=crop&q=80&w=1200" alt="MedCenter" className="w-full h-[500px] object-cover" />
+
+          {/* Image Side - Featuring Manish Yadav's Poster */}
+          <div className="lg:w-1/2 relative">
+            <div className="absolute inset-0 bg-emerald-500/10 blur-[100px] rounded-full -z-10 animate-pulse"></div>
+            <div className="relative rounded-[4rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.25)] border-[12px] border-white transform lg:rotate-2 hover:rotate-0 transition-transform duration-700">
+              {/* Note: In a real environment, this would be the path to the uploaded image */}
+              <img 
+                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=1200" 
+                alt="MedCenter Branding" 
+                className="w-full h-auto object-cover"
+                style={{ content: 'url("https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=1200")' }} 
+                // Fallback for visual representation in this sandbox
+                onError={(e) => {
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1631549916768-4119b295f926?auto=format&fit=crop&q=80&w=1200";
+                }}
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900/80 to-transparent p-12 text-white">
+                <p className="text-xs font-black tracking-[0.3em] uppercase mb-2 opacity-80">Trusted Care</p>
+                <h4 className="text-3xl font-black italic tracking-tight">Delivering Health & Trust.</h4>
+              </div>
+            </div>
+            
+            {/* Floating Badge */}
+            <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-[2.5rem] shadow-2xl border border-slate-50 hidden lg:block animate-bounce-slow">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center">
+                  <Heart size={24} fill="currentColor" />
+                </div>
+                <div>
+                  <p className="text-slate-900 font-black leading-tight text-lg">Trusted By</p>
+                  <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">1000+ Families</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="py-12 px-6 bg-slate-50">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-          <PromoCard icon={<BookOpen size={32} />} title={t('explorer')} desc={lang === 'hi' ? 'Gemini AI से दवाओं की जानकारी लें।' : 'Get info about drugs from Gemini AI.'} to="/explore" color="bg-indigo-600" />
-          <PromoCard icon={<MessageSquare size={32} />} title={t('assistant')} desc={lang === 'hi' ? 'AI सहायक से हेल्थ टिप्स लें।' : 'Get health tips from our AI bot.'} to="/chat" color="bg-emerald-600" />
+      {/* Services Cards */}
+      <section className="py-24 px-6 bg-slate-50/50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16 space-y-4">
+            <h2 className="text-4xl font-black text-slate-900 tracking-tight">How we serve you</h2>
+            <div className="w-20 h-1.5 bg-emerald-500 mx-auto rounded-full"></div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <PromoCard 
+              icon={<BookOpen size={40} />} 
+              title={t('explorer')} 
+              desc={lang === 'hi' ? 'दवाओं की पूरी जानकारी प्राप्त करें - उपयोग, खुराक और साइड इफेक्ट्स।' : 'Get deep insights into medications - usage, dosage, and side effects.'} 
+              to="/explore" 
+              color="bg-slate-900" 
+              label="AI SEARCH"
+            />
+            <PromoCard 
+              icon={<MessageSquare size={40} />} 
+              title={t('assistant')} 
+              desc={lang === 'hi' ? '24/7 AI सहायक के साथ अपनी सेहत की समस्याओं पर चर्चा करें।' : 'Discuss your health concerns 24/7 with our specialized AI assistant.'} 
+              to="/chat" 
+              color="bg-emerald-600" 
+              label="AI CHAT"
+            />
+          </div>
         </div>
       </section>
     </div>
   );
 };
 
-const PromoCard = ({ icon, title, desc, to, color }: any) => (
-  <div className="bg-white p-10 rounded-[3rem] border space-y-4 hover:shadow-lg transition-shadow">
-    <div className={`w-16 h-16 ${color} text-white rounded-2xl flex items-center justify-center`}>{icon}</div>
-    <h3 className="text-3xl font-black text-slate-900">{title}</h3>
-    <p className="text-slate-500 font-medium">{desc}</p>
-    <Link to={to} className={`inline-flex items-center gap-2 ${color} text-white px-8 py-3 rounded-xl font-black uppercase text-xs tracking-widest`}>
-      Open <ChevronRight size={14} />
-    </Link>
+const PromoCard = ({ icon, title, desc, to, color, label }: any) => (
+  <div className="group bg-white p-12 rounded-[4rem] border border-slate-100 space-y-6 hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.1)] transition-all hover:-translate-y-2 relative overflow-hidden">
+    <div className={`absolute top-0 right-0 w-32 h-32 ${color} opacity-[0.03] rounded-bl-[100px] group-hover:w-full group-hover:h-full group-hover:rounded-none transition-all duration-500`}></div>
+    <div className="relative z-10">
+      <div className="flex items-center justify-between mb-8">
+        <div className={`w-20 h-20 ${color} text-white rounded-3xl flex items-center justify-center shadow-lg shadow-slate-200`}>{icon}</div>
+        <span className="text-[10px] font-black tracking-widest text-slate-300 uppercase">{label}</span>
+      </div>
+      <h3 className="text-4xl font-black text-slate-900 tracking-tighter mb-4">{title}</h3>
+      <p className="text-slate-500 font-medium text-lg leading-relaxed mb-8">{desc}</p>
+      <Link to={to} className={`inline-flex items-center gap-3 ${color} text-white px-10 py-4 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-lg active:scale-95 transition-all`}>
+        Explore Now <ChevronRight size={16} />
+      </Link>
+    </div>
   </div>
 );
 

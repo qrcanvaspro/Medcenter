@@ -13,17 +13,23 @@ const MedicineExplorer: React.FC = () => {
 
   const handleSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!query.trim() || loading) return;
+    const trimmedQuery = query.trim();
+    if (!trimmedQuery || loading) return;
 
     setLoading(true);
     setError('');
     setDetails(null);
     
     try {
-      const result = await getMedicineDetails(query, lang);
-      setDetails(result);
+      const result = await getMedicineDetails(trimmedQuery, lang);
+      if (result) {
+        setDetails(result);
+      } else {
+        throw new Error("No data returned");
+      }
     } catch (err: any) {
-      setError(err.message);
+      console.error("Search Handler Error:", err);
+      setError(err.message || (lang === 'hi' ? 'कुछ गलत हो गया। कृपया दोबारा कोशिश करें।' : 'Search failed. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -53,7 +59,7 @@ const MedicineExplorer: React.FC = () => {
             <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" size={24} />
             <button 
               type="submit"
-              disabled={loading}
+              disabled={loading || !query.trim()}
               className="absolute right-3 top-3 bottom-3 bg-indigo-600 text-white px-8 rounded-2xl font-black hover:bg-indigo-700 transition-all disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-indigo-200 active:scale-95"
             >
               {loading ? <Loader2 className="animate-spin" size={20} /> : t('exploreBtn')}
@@ -70,9 +76,13 @@ const MedicineExplorer: React.FC = () => {
       )}
 
       {error && (
-        <div className="bg-rose-50 border-2 border-rose-100 p-8 rounded-[2rem] text-rose-700 text-center shadow-sm flex flex-col items-center gap-4">
+        <div className="bg-rose-50 border-2 border-rose-100 p-8 rounded-[2rem] text-rose-700 text-center shadow-sm flex flex-col items-center gap-4 max-w-2xl mx-auto">
           <AlertTriangle size={48} className="text-rose-500" />
-          <p className="font-bold text-lg">{error}</p>
+          <div className="space-y-1">
+            <p className="font-bold text-lg">{lang === 'hi' ? 'खोज विफल रही' : 'Search Failed'}</p>
+            <p className="text-sm opacity-80">{error}</p>
+          </div>
+          <button onClick={() => setError('')} className="text-xs font-black text-rose-500 underline uppercase tracking-widest">Try with a different name</button>
         </div>
       )}
 
@@ -128,12 +138,12 @@ const ListSection: React.FC<{ title: string, items: string[], icon: React.ReactN
   <div className="space-y-4">
     <h4 className="flex items-center gap-2 font-black text-slate-800 uppercase tracking-widest text-xs">{icon} {title}</h4>
     <div className="space-y-2">
-      {items.map((item, i) => (
+      {items && items.length > 0 ? items.map((item, i) => (
         <div key={i} className={`p-3 rounded-xl font-bold text-xs border ${badgeColor} ${isWarning ? 'flex items-start gap-2' : ''}`}>
           {isWarning && <Info size={14} className="shrink-0 mt-0.5" />}
           {item}
         </div>
-      ))}
+      )) : <p className="text-slate-400 text-xs italic">No information available</p>}
     </div>
   </div>
 );
