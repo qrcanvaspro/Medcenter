@@ -2,28 +2,32 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 /**
- * Robust helper to extract and parse JSON from AI response.
+ * Safely access the API key to prevent build crashes on Netlify
  */
-const parseAIJSON = (text: string) => {
-  if (!text) throw new Error("Empty response from medical database.");
+const getSafeApiKey = (): string => {
   try {
-    // Cleaning the response string just in case it contains markdown code blocks
-    const cleanText = text.trim().replace(/^```json/, '').replace(/```$/, '').trim();
-    return JSON.parse(cleanText);
+    // @ts-ignore - process might not be defined in browser environments without polyfills
+    const key = typeof process !== 'undefined' ? process.env?.API_KEY : '';
+    return key || '';
   } catch (e) {
-    console.error("Failed to parse AI JSON response:", text);
-    throw new Error("Invalid response format from server. Please try again.");
+    return '';
+  }
+};
+
+const parseResponse = (text: string) => {
+  try {
+    const clean = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    return JSON.parse(clean);
+  } catch (e) {
+    console.error("JSON Parsing failed:", text);
+    throw new Error("Invalid format received from AI.");
   }
 };
 
 export const askPharmacist = async (prompt: string, history: any[], lang: 'en' | 'hi' = 'en') => {
   try {
-    const apiKey = process.env.API_KEY;
-    if (!apiKey) {
-      return lang === 'hi' 
-        ? "त्रुटि: API_KEY उपलब्ध नहीं है। कृपया सेटिंग्स चेक करें।" 
-        : "Error: API_KEY not found in environment.";
-    }
+    const apiKey = getSafeApiKey();
+    if (!apiKey) throw new Error("API_KEY_MISSING");
 
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
@@ -33,33 +37,35 @@ export const askPharmacist = async (prompt: string, history: any[], lang: 'en' |
         { role: 'user', parts: [{ text: prompt }] }
       ],
       config: {
-        systemInstruction: `You are a professional medical AI assistant for Manish Yadav's MedCenter. 
-        Your goal is to provide accurate pharmaceutical data. 
-        Current User: Mr. Manish Yadav. 
+        systemInstruction: `You are a medical assistant for Mr. Manish Yadav's MedCenter. 
+        Current User: Mr. Manish Yadav.
         Language: ${lang === 'hi' ? 'Hindi' : 'English'}.
-        Always include a disclaimer that you are an AI.`,
-        temperature: 0.5,
+        Always mention you are an AI assistant.`,
+        temperature: 0.7,
       },
     });
 
-    return response.text || "No response generated.";
+    return response.text || "No response.";
   } catch (error: any) {
-    console.error("Gemini Chat Error:", error);
-    return `Connection error: ${error.message || 'Unknown error'}`;
+    console.error("Chat Error:", error);
+    if (error.message === "API_KEY_MISSING") {
+      return lang === 'hi' 
+        ? "त्रुटि: API_KEY नहीं मिली। कृपया Netlify में 'API_KEY' सेट करें।" 
+        : "Error: API_KEY missing. Please set it in Netlify Environment Variables.";
+    }
+    return lang === 'hi' ? "कनेक्शन की समस्या। कृपया पुनः प्रयास करें।" : "Connection error. Please try again.";
   }
 };
 
 export const getMedicineDetails = async (medicineName: string, lang: 'en' | 'hi' = 'en') => {
-  const apiKey = process.env.API_KEY;
+  const apiKey = getSafeApiKey();
   if (!apiKey) throw new Error("API_KEY_MISSING");
 
   try {
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: `Provide detailed medical data for the drug: ${medicineName}. 
-      Return the data strictly in JSON format. 
-      Language: ${lang === 'hi' ? 'Hindi' : 'English'}.`,
+      contents: `Detailed medical analysis for: ${medicineName}. Language: ${lang === 'hi' ? 'Hindi' : 'English'}.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -79,11 +85,9 @@ export const getMedicineDetails = async (medicineName: string, lang: 'en' | 'hi'
       }
     });
 
-    const text = response.text;
-    if (!text) throw new Error("EMPTY_RESPONSE");
-    return parseAIJSON(text);
+    return parseResponse(response.text || "{}");
   } catch (error: any) {
-    console.error("Gemini Detail Fetch Error:", error);
+    console.error("Details Error:", error);
     throw error;
   }
 };
