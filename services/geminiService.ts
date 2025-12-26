@@ -1,12 +1,19 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Helper to create a fresh instance of GoogleGenAI using the secure environment key
-const getAIClient = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
-
-export const askPharmacist = async (prompt: string, history: { role: 'user' | 'model', parts: { text: string }[] }[]) => {
+const parseAIJSON = (text: string) => {
   try {
-    const ai = getAIClient();
+    const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    return JSON.parse(cleanText);
+  } catch (e) {
+    console.error("Failed to parse AI JSON response:", text);
+    throw new Error("Invalid response format from medical database.");
+  }
+};
+
+export const askPharmacist = async (prompt: string, history: any[], lang: 'en' | 'hi' = 'en') => {
+  try {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: [
@@ -14,54 +21,43 @@ export const askPharmacist = async (prompt: string, history: { role: 'user' | 'm
         { role: 'user', parts: [{ text: prompt }] }
       ],
       config: {
-        systemInstruction: `You are a helpful AI Medical Assistant for an app managed by Mr. Manish Yadav. 
-        Your goal is to provide general information about medicines, dosages, and health tips. 
-        CRITICAL: Always start by stating you are an AI assistant and not a doctor. 
-        Advise consulting a healthcare professional for specific medical advice.
-        Keep responses professional, empathetic, and clear.`,
+        systemInstruction: `You are a helpful AI Medical Assistant for MedCenter, managed by Mr. Manish Yadav. 
+        Provide general information about medicines, dosages, and health tips. 
+        Language: ${lang === 'hi' ? 'Respond ONLY in Hindi (Devanagari script).' : 'Respond ONLY in English.'}
+        Always state you are an AI assistant and not a doctor.`,
         temperature: 0.7,
       },
     });
 
-    return response.text || "I'm sorry, I couldn't generate a response right now.";
+    return response.text || "No response generated.";
   } catch (error) {
-    console.error("Gemini API Error:", error);
-    return "I'm having trouble connecting to my medical database. Please try again in a moment.";
+    console.error("Gemini Chat Error:", error);
+    return lang === 'hi' ? "कनेक्शन एरर। कृपया बाद में प्रयास करें।" : "Connection error. Please try again later.";
   }
 };
 
-export const getMedicineDetails = async (medicineName: string) => {
+export const getMedicineDetails = async (medicineName: string, lang: 'en' | 'hi' = 'en') => {
   try {
-    const ai = getAIClient();
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: `Provide complete professional details for: ${medicineName}. 
-      Explain what it treats, how it works, dosage, active ingredients, common side effects, and safety warnings.`,
+      contents: `Provide complete professional details for the medicine: ${medicineName}. 
+      Include purpose, action, dosage, composition, side effects, warnings, and a short description.
+      Language preference: ${lang === 'hi' ? 'Hindi (Hindi content for values)' : 'English'}.
+      CRITICAL: Return ONLY valid JSON.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
           properties: {
             name: { type: Type.STRING },
-            purpose: { type: Type.STRING, description: "Primary medical use" },
-            action: { type: Type.STRING, description: "How it works in the body" },
-            dosage: { type: Type.STRING, description: "Standard adult dosage guidelines" },
-            composition: { 
-              type: Type.ARRAY, 
-              items: { type: Type.STRING },
-              description: "Active chemical components"
-            },
-            sideEffects: { 
-              type: Type.ARRAY, 
-              items: { type: Type.STRING },
-              description: "Common side effects"
-            },
-            warnings: { 
-              type: Type.ARRAY, 
-              items: { type: Type.STRING },
-              description: "Safety precautions"
-            },
-            description: { type: Type.STRING, description: "Brief overview" }
+            purpose: { type: Type.STRING },
+            action: { type: Type.STRING },
+            dosage: { type: Type.STRING },
+            composition: { type: Type.ARRAY, items: { type: Type.STRING } },
+            sideEffects: { type: Type.ARRAY, items: { type: Type.STRING } },
+            warnings: { type: Type.ARRAY, items: { type: Type.STRING } },
+            description: { type: Type.STRING }
           },
           required: ["name", "purpose", "action", "dosage", "composition", "sideEffects", "warnings", "description"]
         }
@@ -70,9 +66,10 @@ export const getMedicineDetails = async (medicineName: string) => {
 
     const text = response.text;
     if (!text) throw new Error("Empty response from AI");
-    return JSON.parse(text);
-  } catch (error) {
+    
+    return parseAIJSON(text);
+  } catch (error: any) {
     console.error("Gemini Detail Fetch Error:", error);
-    throw new Error("Could not retrieve medicine data. Please check the name.");
+    throw new Error(lang === 'hi' ? "डेटा नहीं मिला। कृपया दवा का नाम चेक करें।" : "Medicine details not found. Please check the name.");
   }
 };
