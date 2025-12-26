@@ -15,7 +15,7 @@ const translations: Record<Language, Record<string, string>> = {
     explorer: "Medicine Explorer",
     assistant: "AI Assistant",
     order: "Order",
-    buyNow: "BUY NOW",
+    buyNow: "BOOK ORDER",
     heroTitle1: "Genuine Care",
     heroTitle2: "Trusted Advice",
     heroSub: "Experience the future of healthcare. Get medicine info with AI Explorer and order directly from Manish Yadav via WhatsApp.",
@@ -36,7 +36,7 @@ const translations: Record<Language, Record<string, string>> = {
     explorer: "दवाई खोजें",
     assistant: "AI सहायक",
     order: "ऑर्डर करें",
-    buyNow: "अभी खरीदें",
+    buyNow: "ऑर्डर बुक करें",
     heroTitle1: "सच्ची देखभाल",
     heroTitle2: "भरोसेमंद सलाह",
     heroSub: "हेल्थकेयर के भविष्य का अनुभव करें। AI एक्सप्लोरर के साथ दवा की जानकारी प्राप्त करें और सीधे मनीष यादव से व्हाट्सएप के माध्यम से ऑर्डर करें।",
@@ -56,7 +56,6 @@ const translations: Record<Language, Record<string, string>> = {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-// @fix: Added PropsWithChildren to explicitly allow children and resolve strict TypeScript errors in App.tsx
 export const LanguageProvider = ({ children }: PropsWithChildren<{}>) => {
   const [lang, setLang] = useState<Language>('en');
 

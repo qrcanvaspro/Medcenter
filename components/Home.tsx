@@ -34,7 +34,7 @@ const Home: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start pt-4">
               <Link to="/order" className="group bg-emerald-600 text-white px-10 py-6 rounded-[2rem] font-black text-xl flex items-center justify-center gap-3 shadow-2xl shadow-emerald-200 hover:bg-emerald-700 hover:-translate-y-1 transition-all active:scale-95">
                 <ShoppingBag size={24} className="group-hover:rotate-12 transition-transform" /> 
-                {lang === 'hi' ? 'दवाई ऑर्डर करें' : 'ORDER MEDICINE'}
+                {t('buyNow')}
               </Link>
               <Link to="/explore" className="bg-slate-900 text-white px-10 py-6 rounded-[2rem] font-black text-xl flex items-center justify-center gap-3 shadow-2xl shadow-slate-200 hover:bg-slate-800 hover:-translate-y-1 transition-all active:scale-95 border-b-4 border-slate-700">
                 <Search size={24} /> {t('explorer')}
@@ -59,24 +59,33 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Image Side - Featuring Manish Yadav's Poster */}
+          {/* Image Side - High Quality Brand Showcase */}
           <div className="lg:w-1/2 relative">
             <div className="absolute inset-0 bg-emerald-500/10 blur-[100px] rounded-full -z-10 animate-pulse"></div>
-            <div className="relative rounded-[4rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.25)] border-[12px] border-white transform lg:rotate-2 hover:rotate-0 transition-transform duration-700">
-              {/* Note: In a real environment, this would be the path to the uploaded image */}
-              <img 
-                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=1200" 
-                alt="MedCenter Branding" 
-                className="w-full h-auto object-cover"
-                style={{ content: 'url("https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=1200")' }} 
-                // Fallback for visual representation in this sandbox
-                onError={(e) => {
-                  e.currentTarget.src = "https://images.unsplash.com/photo-1631549916768-4119b295f926?auto=format&fit=crop&q=80&w=1200";
-                }}
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900/80 to-transparent p-12 text-white">
-                <p className="text-xs font-black tracking-[0.3em] uppercase mb-2 opacity-80">Trusted Care</p>
-                <h4 className="text-3xl font-black italic tracking-tight">Delivering Health & Trust.</h4>
+            <div className="relative rounded-[4rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.25)] border-[12px] border-white transform lg:rotate-2 hover:rotate-0 transition-all duration-700">
+              <div className="aspect-[3/4] bg-slate-100 flex items-center justify-center overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1631549916768-4119b295f926?auto=format&fit=crop&q=80&w=1200" 
+                  alt="MedCenter Branding Poster" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-12 text-white">
+                <div className="flex items-center gap-4 mb-6">
+                   <div className="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-2xl border border-emerald-400/50">
+                      <Activity size={28} className="text-white" />
+                   </div>
+                   <div>
+                      <p className="text-[10px] font-black tracking-[0.3em] uppercase opacity-70">MedCenter</p>
+                      <p className="text-2xl font-black leading-none tracking-tight">Manish Yadav</p>
+                   </div>
+                </div>
+                <h4 className="text-4xl font-black italic tracking-tighter leading-tight mb-2">Delivering Health & Trust.</h4>
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                   <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                   Trusted Care in Your Hands
+                </div>
               </div>
             </div>
             
@@ -88,7 +97,7 @@ const Home: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-slate-900 font-black leading-tight text-lg">Trusted By</p>
-                  <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">1000+ Families</p>
+                  <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">1000+ Families</p>
                 </div>
               </div>
             </div>
@@ -100,8 +109,8 @@ const Home: React.FC = () => {
       <section className="py-24 px-6 bg-slate-50/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16 space-y-4">
-            <h2 className="text-4xl font-black text-slate-900 tracking-tight">How we serve you</h2>
-            <div className="w-20 h-1.5 bg-emerald-500 mx-auto rounded-full"></div>
+            <h2 className="text-4xl font-black text-slate-900 tracking-tight">Our Core Services</h2>
+            <div className="w-20 h-1.5 bg-emerald-500 mx-auto rounded-full shadow-sm shadow-emerald-200"></div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">

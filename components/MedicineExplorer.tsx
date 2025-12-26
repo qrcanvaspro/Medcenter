@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, FlaskConical, Activity, AlertTriangle, BookOpen, Loader2, Info, Pill, ShieldAlert, HeartPulse, Stethoscope, ListRestart } from 'lucide-react';
+import { Search, FlaskConical, Activity, AlertTriangle, BookOpen, Loader2, Info, Pill, ShieldAlert, HeartPulse, Stethoscope, ListRestart, Settings, ExternalLink } from 'lucide-react';
 import { getMedicineDetails } from '../services/geminiService';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -10,6 +10,7 @@ const MedicineExplorer: React.FC = () => {
   const [details, setDetails] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isKeyMissing, setIsKeyMissing] = useState(false);
 
   const handleSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -18,18 +19,21 @@ const MedicineExplorer: React.FC = () => {
 
     setLoading(true);
     setError('');
+    setIsKeyMissing(false);
     setDetails(null);
     
     try {
       const result = await getMedicineDetails(trimmedQuery, lang);
       if (result) {
         setDetails(result);
-      } else {
-        throw new Error("No data returned");
       }
     } catch (err: any) {
       console.error("Search Handler Error:", err);
-      setError(err.message || (lang === 'hi' ? 'कुछ गलत हो गया। कृपया दोबारा कोशिश करें।' : 'Search failed. Please try again.'));
+      if (err.message === "API_KEY_MISSING") {
+        setIsKeyMissing(true);
+      } else {
+        setError(lang === 'hi' ? 'खोज विफल रही। कृपया नाम चेक करें।' : 'Search failed. Please check the name.');
+      }
     } finally {
       setLoading(false);
     }
@@ -68,6 +72,31 @@ const MedicineExplorer: React.FC = () => {
         </form>
       </div>
 
+      {isKeyMissing && (
+        <div className="max-w-2xl mx-auto bg-amber-50 border-2 border-amber-200 rounded-[2rem] p-8 space-y-6 shadow-sm">
+          <div className="flex items-center gap-4 text-amber-700">
+            <Settings size={32} className="animate-spin-slow" />
+            <h3 className="text-xl font-black">{lang === 'hi' ? 'सेटअप आवश्यक है (Manish Yadav)' : 'Configuration Required'}</h3>
+          </div>
+          <div className="space-y-4 text-amber-800 text-sm font-medium">
+            <p>{lang === 'hi' ? 'नेटलिफाई पर होस्ट करने के लिए आपको API Key सेट करनी होगी:' : 'To make search work on Netlify, you must set your API Key:'}</p>
+            <ol className="list-decimal list-inside space-y-2">
+              <li>Netlify Dashboard खोलें</li>
+              <li>Site Settings > Build & Deploy > Environment पर जाएँ</li>
+              <li><b>API_KEY</b> नाम से अपनी Gemini Key जोड़ें</li>
+              <li>साइट को दोबारा "Deploy" करें</li>
+            </ol>
+            <a 
+              href="https://app.netlify.com/" 
+              target="_blank" 
+              className="inline-flex items-center gap-2 bg-amber-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-amber-700 transition-all"
+            >
+              Open Netlify <ExternalLink size={14} />
+            </a>
+          </div>
+        </div>
+      )}
+
       {loading && (
         <div className="flex flex-col items-center justify-center py-20 space-y-6">
           <Loader2 className="animate-spin text-indigo-600" size={64} strokeWidth={3} />
@@ -75,14 +104,13 @@ const MedicineExplorer: React.FC = () => {
         </div>
       )}
 
-      {error && (
+      {error && !isKeyMissing && (
         <div className="bg-rose-50 border-2 border-rose-100 p-8 rounded-[2rem] text-rose-700 text-center shadow-sm flex flex-col items-center gap-4 max-w-2xl mx-auto">
           <AlertTriangle size={48} className="text-rose-500" />
           <div className="space-y-1">
             <p className="font-bold text-lg">{lang === 'hi' ? 'खोज विफल रही' : 'Search Failed'}</p>
             <p className="text-sm opacity-80">{error}</p>
           </div>
-          <button onClick={() => setError('')} className="text-xs font-black text-rose-500 underline uppercase tracking-widest">Try with a different name</button>
         </div>
       )}
 
