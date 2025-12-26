@@ -6,10 +6,14 @@ import {
   Activity,
   User,
   Home as HomeIcon,
-  PhoneCall
+  PhoneCall,
+  Search,
+  MessageSquare
 } from 'lucide-react';
 import Home from './components/Home';
 import MedicineBooking from './components/MedicineBooking';
+import MedicineExplorer from './components/MedicineExplorer';
+import AIAssistant from './components/AIAssistant';
 
 const App: React.FC = () => {
   return (
@@ -23,13 +27,15 @@ const App: React.FC = () => {
             </div>
             <div>
               <h1 className="text-xl font-black text-slate-900 tracking-tight leading-none">MedCenter</h1>
-              <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest mt-1">Trusted Care</p>
+              <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest mt-1">Manish Yadav's Care</p>
             </div>
           </Link>
           
           <nav className="hidden md:flex items-center gap-8">
             <NavLink to="/" label="Home" icon={<HomeIcon size={18} />} />
-            <NavLink to="/order" label="Order Medicine" icon={<ShoppingBag size={18} />} />
+            <NavLink to="/explore" label="Medicine Explorer" icon={<Search size={18} />} />
+            <NavLink to="/chat" label="AI Assistant" icon={<MessageSquare size={18} />} />
+            <NavLink to="/order" label="Order" icon={<ShoppingBag size={18} />} />
           </nav>
 
           <div className="flex items-center gap-4">
@@ -51,12 +57,14 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/order" element={<MedicineBooking />} />
+            <Route path="/explore" element={<MedicineExplorer />} />
+            <Route path="/chat" element={<AIAssistant />} />
             <Route path="*" element={<Home />} />
           </Routes>
         </main>
 
         {/* Minimal Professional Footer */}
-        <footer className="bg-slate-900 text-white py-12 px-6">
+        <footer className="bg-slate-900 text-white py-12 px-6 mt-12">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 items-center text-center md:text-left">
             <div>
               <div className="flex items-center gap-3 justify-center md:justify-start mb-4">
@@ -72,13 +80,17 @@ const App: React.FC = () => {
               <a href="tel:+919616921617" className="flex items-center gap-3 text-xl font-black hover:text-emerald-400 transition-colors">
                 <PhoneCall /> +91 96169-21617
               </a>
+              <div className="flex gap-4">
+                <Link to="/chat" className="text-xs text-slate-400 hover:text-white transition-colors uppercase font-bold tracking-widest">Ask AI Chatbot</Link>
+                <Link to="/explore" className="text-xs text-slate-400 hover:text-white transition-colors uppercase font-bold tracking-widest">Medicine Explorer</Link>
+              </div>
             </div>
             <div className="text-center md:text-right">
               <p className="text-slate-400 text-xs font-medium">
                 © 2024 MedCenter Portal • Sector 15, Noida, UP
               </p>
               <p className="text-[10px] text-slate-500 mt-2 uppercase tracking-tighter">
-                Authentic Medicines • Rapid Delivery • Trusted Advice
+                Authentic Medicines • Rapid Delivery • AI Powered
               </p>
             </div>
           </div>

@@ -11,7 +11,8 @@ import {
   ChevronRight,
   FlaskConical,
   ShoppingBag,
-  MessageSquare
+  MessageSquare,
+  Search
 } from 'lucide-react';
 import { 
   XAxis, 
@@ -47,13 +48,13 @@ const Dashboard: React.FC<DashboardProps> = ({ medicines, reminders }) => {
           <p className="text-slate-500">How can we help you with your health today?</p>
         </div>
         <div className="flex gap-3 w-full md:w-auto">
-          <Link to="/booking" className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-2xl font-bold shadow-xl shadow-emerald-100 hover:scale-105 transition-all">
+          <Link to="/order" className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-2xl font-bold shadow-xl shadow-emerald-100 hover:scale-105 transition-all">
             <ShoppingBag size={20} />
             Order Medicine
           </Link>
           <Link to="/explore" className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold shadow-xl shadow-indigo-100 hover:scale-105 transition-all">
-            <FlaskConical size={20} />
-            Composition
+            <Search size={20} />
+            Medicine Explorer
           </Link>
         </div>
       </div>
@@ -139,7 +140,7 @@ const Dashboard: React.FC<DashboardProps> = ({ medicines, reminders }) => {
               <p className="text-emerald-100 text-sm leading-relaxed mb-6">
                 Need medicine urgently? Just enter the name and address, and we'll send your order directly to the pharmacy via WhatsApp.
               </p>
-              <Link to="/booking" className="inline-flex items-center gap-2 bg-[#25D366] text-white font-black px-6 py-3 rounded-xl hover:gap-4 transition-all">
+              <Link to="/order" className="inline-flex items-center gap-2 bg-[#25D366] text-white font-black px-6 py-3 rounded-xl hover:gap-4 transition-all">
                 Order Now <ChevronRight size={18} />
               </Link>
             </div>

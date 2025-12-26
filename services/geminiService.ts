@@ -23,7 +23,6 @@ export const askPharmacist = async (prompt: string, history: { role: 'user' | 'm
       },
     });
 
-    // @fix: Access .text property directly as per Gemini API guidelines
     return response.text;
   } catch (error) {
     console.error("Gemini API Error:", error);
@@ -36,29 +35,31 @@ export const getMedicineDetails = async (medicineName: string) => {
     const ai = getAIClient();
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: `Provide detailed information about the medicine: ${medicineName}. Include its composition (active ingredients), primary uses, common side effects, and important warnings.`,
+      contents: `Provide detailed information about the medicine: ${medicineName}. 
+      Include its purpose (what it treats), action (how it works in the body), general dosage guidelines, composition, and side effects.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
           properties: {
             name: { type: Type.STRING },
+            purpose: { type: Type.STRING, description: "What the medicine is primarily used for" },
+            action: { type: Type.STRING, description: "Mechanism of action - how it works in the body" },
+            dosage: { type: Type.STRING, description: "General dosage guidelines for adults" },
             composition: { 
               type: Type.ARRAY, 
               items: { type: Type.STRING },
               description: "List of active chemical ingredients"
             },
-            uses: { type: Type.ARRAY, items: { type: Type.STRING } },
             sideEffects: { type: Type.ARRAY, items: { type: Type.STRING } },
             warnings: { type: Type.ARRAY, items: { type: Type.STRING } },
-            description: { type: Type.STRING, description: "Short summary of how the medicine works" }
+            description: { type: Type.STRING, description: "Short summary of the medicine" }
           },
-          required: ["name", "composition", "uses", "sideEffects", "warnings", "description"]
+          required: ["name", "purpose", "action", "dosage", "composition", "sideEffects", "warnings", "description"]
         }
       }
     });
 
-    // @fix: Access .text property directly as per Gemini API guidelines
     return JSON.parse(response.text || '{}');
   } catch (error) {
     console.error("Gemini Detail Fetch Error:", error);
