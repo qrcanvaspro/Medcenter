@@ -1,7 +1,7 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-// @fix: helper to create a fresh instance of GoogleGenAI using strictly process.env.API_KEY
+// Helper to create a fresh instance of GoogleGenAI using the secure environment key
 const getAIClient = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const askPharmacist = async (prompt: string, history: { role: 'user' | 'model', parts: { text: string }[] }[]) => {
@@ -14,19 +14,19 @@ export const askPharmacist = async (prompt: string, history: { role: 'user' | 'm
         { role: 'user', parts: [{ text: prompt }] }
       ],
       config: {
-        systemInstruction: `You are a helpful AI Medical Assistant for an app dedicated to Mr. Manish Yadav. 
-        Your goal is to provide general information about medicines, dosages, and side effects. 
-        CRITICAL: Always start by stating that you are an AI assistant and not a medical doctor. 
-        Advise the user to consult with a healthcare professional before making any medical decisions.
-        Keep responses concise, professional, and empathetic.`,
+        systemInstruction: `You are a helpful AI Medical Assistant for an app managed by Mr. Manish Yadav. 
+        Your goal is to provide general information about medicines, dosages, and health tips. 
+        CRITICAL: Always start by stating you are an AI assistant and not a doctor. 
+        Advise consulting a healthcare professional for specific medical advice.
+        Keep responses professional, empathetic, and clear.`,
         temperature: 0.7,
       },
     });
 
-    return response.text;
+    return response.text || "I'm sorry, I couldn't generate a response right now.";
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return "I'm sorry, I encountered an error. Please try again later.";
+    return "I'm having trouble connecting to my medical database. Please try again in a moment.";
   }
 };
 
@@ -35,34 +35,44 @@ export const getMedicineDetails = async (medicineName: string) => {
     const ai = getAIClient();
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: `Provide detailed information about the medicine: ${medicineName}. 
-      Include its purpose (what it treats), action (how it works in the body), general dosage guidelines, composition, and side effects.`,
+      contents: `Provide complete professional details for: ${medicineName}. 
+      Explain what it treats, how it works, dosage, active ingredients, common side effects, and safety warnings.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
           properties: {
             name: { type: Type.STRING },
-            purpose: { type: Type.STRING, description: "What the medicine is primarily used for" },
-            action: { type: Type.STRING, description: "Mechanism of action - how it works in the body" },
-            dosage: { type: Type.STRING, description: "General dosage guidelines for adults" },
+            purpose: { type: Type.STRING, description: "Primary medical use" },
+            action: { type: Type.STRING, description: "How it works in the body" },
+            dosage: { type: Type.STRING, description: "Standard adult dosage guidelines" },
             composition: { 
               type: Type.ARRAY, 
               items: { type: Type.STRING },
-              description: "List of active chemical ingredients"
+              description: "Active chemical components"
             },
-            sideEffects: { type: Type.ARRAY, items: { type: Type.STRING } },
-            warnings: { type: Type.ARRAY, items: { type: Type.STRING } },
-            description: { type: Type.STRING, description: "Short summary of the medicine" }
+            sideEffects: { 
+              type: Type.ARRAY, 
+              items: { type: Type.STRING },
+              description: "Common side effects"
+            },
+            warnings: { 
+              type: Type.ARRAY, 
+              items: { type: Type.STRING },
+              description: "Safety precautions"
+            },
+            description: { type: Type.STRING, description: "Brief overview" }
           },
           required: ["name", "purpose", "action", "dosage", "composition", "sideEffects", "warnings", "description"]
         }
       }
     });
 
-    return JSON.parse(response.text || '{}');
+    const text = response.text;
+    if (!text) throw new Error("Empty response from AI");
+    return JSON.parse(text);
   } catch (error) {
     console.error("Gemini Detail Fetch Error:", error);
-    throw error;
+    throw new Error("Could not retrieve medicine data. Please check the name.");
   }
 };
